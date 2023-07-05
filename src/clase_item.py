@@ -8,40 +8,48 @@ class Item(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-    
-    
 
-class Trampa(pygame.sprite.Sprite):
+class Item_Animado(pygame.sprite.Sprite):
     def __init__(self, x, y, animaciones, tam, pantalla):
         super().__init__()
         self.pantalla = pantalla
         self.animaciones = animaciones
         self.tam = tam
         self.reescalar_animaciones()
-        self.que_hacer = "movimiento"
-        self.contador_pasos = 0
-        self.image = self.animaciones[self.que_hacer][self.contador_pasos]
+        self.indice = 0
+        self.image = self.animaciones[self.indice]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         
     def reescalar_animaciones(self):
-        for clave, valores in self.animaciones.items():
-            for valor in range(len(valores)):
-                image = pygame.transform.scale(valores[valor], self.tam)
-                valores[valor] = image
+        for i in range(len(self.animaciones)):
+            imagen = pygame.transform.scale(self.animaciones[i], self.tam)
+            self.animaciones[i] = imagen
                 
-    def animar(self,que_animacion):
+    def animar(self,):
         
-        animacion = self.animaciones[que_animacion]
-        largo = len(self.animaciones[que_animacion])
+        animacion = self.animaciones
+        largo = len(self.animaciones)
 
-        if self.contador_pasos >= largo:
-            self.contador_pasos = 0
+        if self.indice >= largo:
+            self.indice = 0
 
-        self.pantalla.blit(animacion[self.contador_pasos], self.rect)
-        self.contador_pasos += 1
+        self.pantalla.blit(animacion[self.indice], self.rect)
+        self.indice += 1
     
     def update(self):
-        self.animar("movimiento")
-        
+        self.animar()
+
+class Proyectil(Item_Animado):
+    def __init__(self,velocidad, x, y, animaciones, tam, pantalla, direccion):
+        super().__init__(x, y, animaciones, tam, pantalla)
+        self.rect.center = (x, y)
+        self.velocidad = velocidad
+        self.direccion = direccion
+
+    def update(self):
+        if not self.direccion:
+            self.rect.x += self.velocidad
+        else:
+            self.rect.x -= self.velocidad

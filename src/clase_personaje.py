@@ -1,44 +1,49 @@
 import pygame
 from configs import *
+from clase_item import Proyectil
 
 class Personaje():
-    def __init__(self,pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta):
+    def __init__(self,pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta, trampas):
         
-        self.reiniciar(pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta)
-        # self.pantalla = pantalla
-        # self.grupo_enemigos = grupo_enemigos
-        # self.grupo_items = grupo_items
-        # self.meta = meta
-        # self.izquierda = False
-        # self.esta_saltando = False
-        # self.score = 0
-        # self.fuente = pygame.font.Font(FUENTE, 20)
-        # self.lista_bloques = lista_bloques
-        # self.animaciones = animaciones
-        # self.sonidos_pj = sonidos_pj
-        # self.tam = tam_per
-        # self.reescalar_animaciones()
-             
-        # self.que_hacer = "quieto_der"
-        # self.contador_pasos = 0
-        # self.image = self.animaciones[self.que_hacer][self.contador_pasos]
-        # self.rect = self.image.get_rect()
-        # self.rect.bottomleft = x,y
-        
-        # self.vel_x = 5
-        # self.vel_y = 0
-        
-        # # self.gravedad = 0 
-        # self.limite_salto = 16
-        # self.potencia_salto = -16 
-        # # self.sonidos = sonidos
-        # self.vidas = 3
-        
-        # self.ancho = self.image.get_width()
-        # self.alto = self.image.get_height()
+        self.reiniciar(pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta, trampas)
 
+    def reiniciar(self, pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta, trampas):
         
+        self.pantalla = pantalla
+        self.grupo_enemigos = grupo_enemigos
+        self.grupo_items = grupo_items
+        self.meta = meta
+        self.trampas = trampas
+        
+        self.izquierda = False
+        self.esta_saltando = False
+        self.puede_disparar = False
+        
+        self.score = 0
+        self.fuente = pygame.font.Font(FUENTE, 20)
+        self.lista_bloques = lista_bloques
+        self.animaciones = animaciones
+        self.sonidos = sonidos
+        self.tam = tam_per
+        self.reescalar_animaciones()
+                
+        self.que_hacer = "quieto_der"
+        self.contador_pasos = 0
+        self.image = self.animaciones[self.que_hacer][self.contador_pasos]
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = x,y
+        
+        self.vel_x = 5
+        self.vel_y = 0
 
+        self.limite_salto = 16
+        self.potencia_salto = -16 
+        self.vidas = 3
+        
+        self.ancho = self.image.get_width()
+        self.alto = self.image.get_height()
+  
+        
     def reescalar_animaciones(self):
         for clave, valores in self.animaciones.items():
             for valor in range(len(valores)):
@@ -57,24 +62,13 @@ class Personaje():
         self.pantalla.blit(animacion[self.contador_pasos], self.rect)
         self.contador_pasos += 1
     
-    # def teclas_presionadas(self):
-    #     keys = pygame.key.get_pressed()
-    #     if keys[pygame.K_a]:   
-    #         self.que_hacer = "camina_izq"
-    #     elif keys[pygame.K_d]:
-    #         self.que_hacer = "camina_der"
-    #     elif keys[pygame.K_SPACE]:
-    #         self.que_hacer = "salta"
-    #     else:
-    #         self.que_hacer = "quieto"
     
     def actualizar(self, game_over):
         self.dx = 0
         self.dy = 0
         self.game_over = game_over
         
-        if self.game_over == 0:
-            # self.teclas_presionadas()
+        if self.game_over == 0:   
 
             if self.que_hacer == "camina_der":
                 if not self.esta_saltando:
@@ -110,7 +104,7 @@ class Personaje():
                     
                 if not self.esta_saltando:
                     self.animar(self.que_hacer)
-            
+         
             if self.esta_saltando:
                 if self.izquierda:
                     self.que_hacer = "salta_izq"
@@ -166,36 +160,12 @@ class Personaje():
             self.game_over = 1
             self.sonidos["gameplay"].stop()
             self.sonidos["final_nivel"].play()
-            
+        
+        if pygame.sprite.spritecollide(self, self.trampas, False):
+            self.sonidos["gameplay"].stop()  
+            self.sonidos["personaje"]["murio"].play()
+            self.game_over = -1
 
-    def reiniciar(self, pantalla ,animaciones, x, y, tam_per, lista_bloques,grupo_enemigos,grupo_items, sonidos, meta):
-        
-        self.pantalla = pantalla
-        self.grupo_enemigos = grupo_enemigos
-        self.grupo_items = grupo_items
-        self.meta = meta
-        self.izquierda = False
-        self.esta_saltando = False
-        self.score = 0
-        self.fuente = pygame.font.Font(FUENTE, 20)
-        self.lista_bloques = lista_bloques
-        self.animaciones = animaciones
-        self.sonidos = sonidos
-        self.tam = tam_per
-        self.reescalar_animaciones()
-                
-        self.que_hacer = "quieto_der"
-        self.contador_pasos = 0
-        self.image = self.animaciones[self.que_hacer][self.contador_pasos]
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = x,y
-        
-        self.vel_x = 5
-        self.vel_y = 0
-
-        self.limite_salto = 16
-        self.potencia_salto = -16 
-        self.vidas = 3
-        
-        self.ancho = self.image.get_width()
-        self.alto = self.image.get_height()
+    def disparar(self, speed, sprites_proyectiles, animaciones, tam):
+        proyectil = Proyectil(speed, self.rect.centerx, self.rect.centery, animaciones, tam, self.pantalla, self.izquierda)
+        sprites_proyectiles.add(proyectil)

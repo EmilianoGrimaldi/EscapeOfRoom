@@ -17,12 +17,11 @@ class Juego():
         self.reloj = pygame.time.Clock()
         self.fps = FPS
         self.pantalla = pygame.display.set_mode((ANCHO, ALTO))
-        pygame.display.set_caption(TITULO)
+        pygame.display.set_caption(TITULO) 
         self.nivel_actual = None
         self.boton_iniciar = Boton(ANCHO // 2 - 250, ALTO // 2 - 100,PATH_BOTON_INICIAR,TAM_BOTONES, self.pantalla)
         self.boton_cerrar = Boton(ANCHO // 2 + 100, ALTO // 2 - 100,PATH_BOTON_CERRAR,TAM_BOTONES, self.pantalla)
         self.boton_nivel_1 = Boton(ANCHO // 2 + 100, ALTO // 2 - 100,PATH_BOTON_CERRAR,TAM_BOTONES, self.pantalla)
-        
     def comenzar(self,):
         while self.corriendo:
             self.reloj.tick(self.fps)

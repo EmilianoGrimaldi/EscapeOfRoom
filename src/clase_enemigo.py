@@ -54,7 +54,3 @@ class Enemigo(pygame.sprite.Sprite):
         else:
             self.animar("camina_der")
         # self.animar(self.que_hacer)
-        
-    
-    
-    
