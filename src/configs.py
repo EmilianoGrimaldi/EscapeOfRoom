@@ -17,7 +17,7 @@ ORIGEN_PANTALLA = (0, 0)
 FPS = 30
 
 #JUEGO
-TITULO = "Powers for escape"
+TITULO = "Escape Of Room"
 FUENTE = "Fuente/Super Funky.ttf"
 
 #ICONO
